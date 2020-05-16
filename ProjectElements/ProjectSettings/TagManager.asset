@@ -19,8 +19,8 @@ TagManager:
   - PostProcessing
   - Plant
   - Player
-  - 
-  - 
+  - Ground
+  - Moveable
   - 
   - 
   - 
