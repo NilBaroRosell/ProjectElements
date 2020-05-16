@@ -20,11 +20,14 @@ public class Controller : MonoBehaviour
     [SerializeField]
     private float maxSpeed;
     private bool canJump;
+    RigidbodyConstraints defaultConstraints;
+    Vector3 animationLocalPos;
+    Animation actualAnim;
 
     // Start is called before the first frame update
     void Start()
     {
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionZ;
+        rb.constraints = defaultConstraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionZ;
         isGrounded = false;
         jumpRef = Time.realtimeSinceStartup;
         inmuRef = 0;
@@ -68,6 +71,26 @@ public class Controller : MonoBehaviour
             else isGrounded = false;
         }
 
+        if (Input.GetKey(KeyCode.E))
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                RaycastHit hit;
+                Physics.Raycast(transform.position, groundRays[i + 1], out hit, 1);
+
+                if (hit.transform != null && hit.transform.gameObject.layer == 12)
+                {
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                    rb.useGravity = false;
+                    transform.parent.parent = hit.transform;
+                    animationLocalPos = transform.localPosition;
+                    actualAnim = hit.transform.parent.GetComponent<Animation>();
+                    actualAnim.Play();
+                    break;
+                }
+            }
+        }
+        else rb.constraints = defaultConstraints;
 
         Vector3 nextVelocity = rb.velocity;
         nextVelocity.x = Input.GetAxis("Horizontal") * smoothnessX;
@@ -104,6 +127,29 @@ public class Controller : MonoBehaviour
             rb.velocity = rb.velocity.normalized * maxSpeed;
         }
         //Debug.Log(rb.velocity.y);
+    }
+
+    private void LateUpdate()
+    {
+        if (actualAnim == null) return;
+        if (actualAnim.isPlaying)
+        {
+            transform.localPosition = animationLocalPos;
+        }
+        else
+        {
+            Vector3 auxPos = transform.position;
+            Vector3 auxSMoothPos = transform.parent.GetChild(1).position;
+            transform.parent.parent = null;
+            transform.parent.eulerAngles = Vector3.zero;
+            transform.position = auxPos;
+            transform.parent.GetChild(1).position = auxSMoothPos;
+            rb.constraints = defaultConstraints;
+            rb.useGravity = true;
+            actualAnim.transform.GetChild(0).gameObject.layer = 11;
+            actualAnim.enabled = false;
+            actualAnim = null;
+        }
     }
 
     void applyJump()
