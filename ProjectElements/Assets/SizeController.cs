@@ -6,10 +6,15 @@ public class SizeController : MonoBehaviour
 {
     private float initialSize;
     private float size;
+    private float particleInitialLife;
+    private float particleInitialSize;
+    private float collisionRef = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
-        initialSize = gameObject.transform.localScale.x;
+        initialSize = gameObject.transform.parent.localScale.x;
+        particleInitialLife = transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime;
+        particleInitialSize = transform.GetChild(0).GetComponent<ParticleSystem>().startSize;
         size = initialSize;
     }
 
@@ -19,20 +24,24 @@ public class SizeController : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerStay(Collider collision)
     {
-        if(collision.gameObject.tag == "Enemie")
+        if (collisionRef + 1.5f > Time.time) return;
+        if (collision.gameObject.tag == "Enemie")
         {
+            collisionRef = Time.time;
             size -= initialSize * 0.2f;
-            if(size < 0)
+            transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime -= particleInitialLife * 0.2f;
+            transform.GetChild(0).GetComponent<ParticleSystem>().startSize -= particleInitialSize * 0.2f;
+            if (size < 0)
             {
                 size = 0;
-                transform.localScale = new Vector3(size, size, size);
+                transform.parent.localScale = new Vector3(size, size, size);
                 // die
             }
             else
             {
-                transform.localScale = new Vector3(size, size, size);
+                transform.parent.localScale = new Vector3(size, size, size);
             }
         }
 
@@ -40,24 +49,11 @@ public class SizeController : MonoBehaviour
         {
             Destroy(collision.gameObject);
             size = initialSize;
-            transform.localScale = new Vector3(size, size, size);
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Enemie")
-        {
-            size -= initialSize * 0.2f;
-            if (size < 0)
-            {
-                size = 0;
-                // die
-            }
-            else
-            {
-                transform.localScale = new Vector3(size, size, size);
-            }
+            transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
+            transform.parent.localScale = new Vector3(size, size, size);
+            transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y+1.0f, transform.parent.GetChild(0).position.z);
+            transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
+            transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;   
         }
     }
 }
