@@ -84,6 +84,8 @@ public class Controller : MonoBehaviour
                     rb.useGravity = false;
                     transform.parent.parent = hit.transform;
                     animationLocalPos = transform.localPosition;
+                    transform.parent.GetChild(1).GetChild(0).gameObject.SetActive(false);
+                    transform.parent.GetChild(1).GetChild(1).gameObject.SetActive(true);
                     actualAnim = hit.transform.parent.GetComponent<Animation>();
                     actualAnim.Play();
                     break;
@@ -146,6 +148,8 @@ public class Controller : MonoBehaviour
             transform.parent.GetChild(1).position = auxSMoothPos;
             rb.constraints = defaultConstraints;
             rb.useGravity = true;
+            transform.parent.GetChild(1).GetChild(0).gameObject.SetActive(true);
+            transform.parent.GetChild(1).GetChild(1).gameObject.SetActive(false);
             actualAnim.transform.GetChild(0).gameObject.layer = 11;
             actualAnim.enabled = false;
             actualAnim = null;
