@@ -9,6 +9,8 @@ public class SizeController : MonoBehaviour
     private float particleInitialLife;
     private float particleInitialSize;
     private float collisionRef = 0.0f;
+    private Vector3 respawn;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,12 +18,31 @@ public class SizeController : MonoBehaviour
         particleInitialLife = transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime;
         particleInitialSize = transform.GetChild(0).GetComponent<ParticleSystem>().startSize;
         size = initialSize;
+        respawn = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Water")
+        {
+            size = 0;
+            transform.parent.localScale = new Vector3(size, size, size);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Water")
+        {
+            size = 0;
+            transform.parent.localScale = new Vector3(size, size, size);
+        }
     }
 
     private void OnTriggerStay(Collider collision)
@@ -35,14 +56,28 @@ public class SizeController : MonoBehaviour
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize -= particleInitialSize * 0.2f;
             if (size < 0)
             {
-                size = 0;
+                transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
                 transform.parent.localScale = new Vector3(size, size, size);
-                // die
+                transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
+                transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
+                transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
+                transform.parent.GetChild(0).position = respawn;
             }
             else
             {
                 transform.parent.localScale = new Vector3(size, size, size);
             }
+        }
+
+        if (collision.gameObject.tag == "Water")
+        {
+            size = initialSize;
+            transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
+            transform.parent.localScale = new Vector3(size, size, size);
+            transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
+            transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
+            transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
+            transform.parent.GetChild(0).position = respawn;
         }
 
         if (collision.gameObject.tag == "Plant")
