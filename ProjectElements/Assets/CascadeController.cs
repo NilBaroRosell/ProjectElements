@@ -5,15 +5,16 @@ using UnityEngine;
 public class CascadeController : MonoBehaviour
 {
     private ParticleSystem ps;
-    private BoxCollider2D col;
+    private Collider col;
+    public float time = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         ps = transform.GetChild(0).GetComponent<ParticleSystem>();
-        col = transform.parent.transform.GetChild(1).GetComponent<BoxCollider2D>();
+        col = transform.GetChild(1).GetComponent<Collider>();
         col.enabled = true;
-        StartCoroutine(WaitForTime(2));
+        StartCoroutine(WaitForTime(time));
     }
 
     // Update is called once per frame
@@ -29,13 +30,26 @@ public class CascadeController : MonoBehaviour
         if (col.enabled)
         {
             ps.Stop();
-            col.enabled = false;
         }
         else
         {
             ps.Play();
+        }
+        StartCoroutine(ActivateCol(0.75f));
+        StartCoroutine(WaitForTime(time));
+    }
+
+    private IEnumerator ActivateCol(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        if (col.enabled)
+        {
+            col.enabled = false;
+        }
+        else
+        {
             col.enabled = true;
         }
-        StartCoroutine(WaitForTime(2));
     }
 }
