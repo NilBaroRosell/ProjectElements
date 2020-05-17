@@ -8,5 +8,6 @@ public class blockWatterfall : MonoBehaviour
     public void blockWatter()
     {
         watterfall.startLifetime = 0.8f;
+        watterfall.transform.parent.GetChild(1).GetComponent<Collider>().enabled = false;
     }
 }

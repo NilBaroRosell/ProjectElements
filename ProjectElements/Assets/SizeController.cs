@@ -18,7 +18,7 @@ public class SizeController : MonoBehaviour
         particleInitialLife = transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime;
         particleInitialSize = transform.GetChild(0).GetComponent<ParticleSystem>().startSize;
         size = initialSize;
-        respawn = transform.position;
+        respawn = transform.parent.GetChild(0).position;
     }
 
     // Update is called once per frame
@@ -54,18 +54,20 @@ public class SizeController : MonoBehaviour
             size -= initialSize * 0.2f;
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime -= particleInitialLife * 0.2f;
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize -= particleInitialSize * 0.2f;
-            if (size < 0)
+            if (size <= 0.1f)
             {
+                size = initialSize;
                 transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
-                transform.parent.localScale = new Vector3(size, size, size);
+                transform.parent.localScale = new Vector3(size, size, 1);
                 transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
                 transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
                 transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
                 transform.parent.GetChild(0).position = respawn;
+                GameObject.Find("Canvas").GetComponent<inventory>().updateLifes(-1);
             }
             else
             {
-                transform.parent.localScale = new Vector3(size, size, size);
+                transform.parent.localScale = new Vector3(size, size, 1);
             }
         }
 
@@ -73,11 +75,12 @@ public class SizeController : MonoBehaviour
         {
             size = initialSize;
             transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
-            transform.parent.localScale = new Vector3(size, size, size);
+            transform.parent.localScale = new Vector3(size, size, 1);
             transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
             transform.parent.GetChild(0).position = respawn;
+            GameObject.Find("Canvas").GetComponent<inventory>().updateLifes(-1);
         }
 
         if (collision.gameObject.tag == "Plant")
@@ -85,7 +88,7 @@ public class SizeController : MonoBehaviour
             Destroy(collision.gameObject);
             size = initialSize;
             transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
-            transform.parent.localScale = new Vector3(size, size, size);
+            transform.parent.localScale = new Vector3(size, size, 1);
             transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y+1.0f, transform.parent.GetChild(0).position.z);
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;   
