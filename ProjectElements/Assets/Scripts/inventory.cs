@@ -13,7 +13,7 @@ public class inventory : MonoBehaviour
 
     void Start()
     {
-        if (PlayerPrefs.HasKey("lifes") || SceneManager.GetActiveScene().buildIndex == 0)
+        if (PlayerPrefs.HasKey("lifes") || SceneManager.GetActiveScene().name == "Sewer")
         {
             updateLifes(PlayerPrefs.GetInt("lifes"));
             updateExp(PlayerPrefs.GetInt("exp"));
@@ -35,7 +35,7 @@ public class inventory : MonoBehaviour
             RectTransform _transf = Instantiate(lifePrefab, lifes).GetComponent<RectTransform>();
             _transf.anchoredPosition += new Vector2(i * -40, 0);
         }
-        if (_lifes == 0) { _lifes = 3; SceneManager.LoadScene(0); }
+        if (_lifes == 0) { _lifes = 3; SceneManager.LoadScene("Sewer"); }
         PlayerPrefs.SetInt("lifes", _lifes);
     }
 

@@ -29,6 +29,7 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PlayerPrefs.SetInt("LEVEL2", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Nexo" ? 1 : 0);
         rb.constraints = defaultConstraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionZ;
         isGrounded = false;
         jumpRef = Time.realtimeSinceStartup;
