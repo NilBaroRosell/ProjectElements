@@ -5,6 +5,9 @@ using UnityEngine;
 public class EnemieController : MonoBehaviour
 {
     private Transform[] patrolPositions;
+    private Transform[] limitPositions;
+    public bool hasLimits = false;
+    private bool runAway = false;
     [SerializeField] private int direction;
     [SerializeField] private int speed;
     [SerializeField] private float visionRange;
@@ -16,10 +19,22 @@ public class EnemieController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        patrolPositions = new Transform[transform.parent.transform.childCount - 1];
+        patrolPositions = new Transform[2];
+        if (transform.parent.GetChild(3).gameObject.activeSelf)
+        {
+            hasLimits = true;
+            limitPositions = new Transform[2];
+        }
         for(int i = 0; i < patrolPositions.Length; i++)
         {
             patrolPositions[i] = transform.parent.transform.GetChild(i + 1).transform;
+        }
+        if (hasLimits)
+        {
+            for (int i = 0; i < patrolPositions.Length; i++)
+            {
+                limitPositions[i] = transform.parent.transform.GetChild(i + 3).transform;
+            }
         }
         player = GameObject.Find("Player/Model").gameObject;
         state = State.PATROLLING;
@@ -39,7 +54,7 @@ public class EnemieController : MonoBehaviour
                 {
                     direction = (direction == 1) ? 0 : 1;
                 }
-                if(Mathf.Abs(player.transform.position.x - transform.position.x) < visionRange && Mathf.Abs(player.transform.position.y - transform.position.y) < 1.75f)
+                if(Mathf.Abs(player.transform.position.x - transform.position.x) < visionRange && Mathf.Abs(player.transform.position.y - transform.position.y) < 1.75f && !runAway)
                 {
                     if ((player.transform.position.x < transform.position.x && direction == 0) || (player.transform.position.x > transform.position.x && direction == 1))
                     {
@@ -55,8 +70,25 @@ public class EnemieController : MonoBehaviour
                 {
                     state = State.PATROLLING;
                 }
+
+                if (hasLimits)
+                {
+                    if(transform.position.x - limitPositions[0].position.x < 0 || limitPositions[1].position.x - transform.position.x < 0)
+                    {
+                        state = State.PATROLLING;
+                        runAway = true;
+                        StartCoroutine(RunAway(1));
+                    }
+                } 
                 break;
             }
         }
+    }
+
+    private IEnumerator RunAway (float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        runAway = false;
     }
 }
