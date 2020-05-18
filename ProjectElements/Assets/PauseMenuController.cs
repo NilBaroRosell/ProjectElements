@@ -77,6 +77,7 @@ public class PauseMenuController : MonoBehaviour
 
     public void GoMenu()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
 }

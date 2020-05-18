@@ -5316,7 +5316,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -101}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &319627966
@@ -5360,7 +5360,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 861570542}
-        m_MethodName: ShowOptions
+        m_MethodName: GoMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12168,6 +12168,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2158406816890710764, guid: f16f7e992f753cf40b3d94017016befd,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f16f7e992f753cf40b3d94017016befd, type: 3}
 --- !u!4 &805248646 stripped
@@ -14196,12 +14201,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 980630829}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &982819317 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2158406816703136840, guid: f16f7e992f753cf40b3d94017016befd,
-    type: 3}
-  m_PrefabInstance: {fileID: 794171019}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &986717958
 GameObject:
   m_ObjectHideFlags: 0
@@ -15227,7 +15226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inv: {fileID: 208625519}
   coin: {fileID: 174873593}
-  player: {fileID: 982819317}
+  player: {fileID: 1768393649}
 --- !u!212 &1016116264
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17835,7 +17834,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inv: {fileID: 208625519}
   coin: {fileID: 721058672}
-  player: {fileID: 982819317}
+  player: {fileID: 1768393649}
 --- !u!58 &1121160936
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -25118,7 +25117,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inv: {fileID: 208625519}
   coin: {fileID: 613740055}
-  player: {fileID: 982819317}
+  player: {fileID: 1768393649}
 --- !u!58 &1626584263
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -27711,6 +27710,12 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &1768393649 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2158406816890710765, guid: f16f7e992f753cf40b3d94017016befd,
+    type: 3}
+  m_PrefabInstance: {fileID: 794171019}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1768961736
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -28,7 +28,10 @@ public class SizeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            GetComponent<CapsuleCollider>().enabled = !GetComponent<CapsuleCollider>().enabled;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
