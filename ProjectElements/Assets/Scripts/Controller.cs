@@ -23,6 +23,8 @@ public class Controller : MonoBehaviour
     RigidbodyConstraints defaultConstraints;
     Vector3 animationLocalPos;
     Animation actualAnim;
+    Vector3 deltaPos;
+    int truncateAcum = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -39,21 +41,38 @@ public class Controller : MonoBehaviour
 
         lifes = 4;
         canJump = true;
+        deltaPos = transform.position;
     }
 
     // Update is called once per frame
     void Update()
+    {
+        if (rb.velocity.magnitude > maxSpeed && truncateAcum < 2)
+        {
+            truncateAcum++;
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
+        else if (truncateAcum >= 2)
+        {
+            rb.velocity = Vector3.zero;
+            truncateAcum = 0;
+            transform.position = deltaPos;
+        }
+        if (Vector2.Distance(transform.position, deltaPos) < maxSpeed) deltaPos = transform.position;
+        else { transform.position = deltaPos; rb.velocity = Vector3.zero; }
+    }
+
+    private void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.Escape))
         {
             restartlife();
         }
         if (canJump && Input.GetAxis("Jump") == 1 && isGrounded && jumpRef + 0.4f < Time.realtimeSinceStartup)
-        {           
+        {
             jumpAcum += 4;
         }
         if (jumpAcum > 6) jumpAcum = 6;
-        Debug.Log(jumpAcum);
         if (!Input.GetKey(KeyCode.Space) && jumpAcum == 0) canJump = true;
 
 
@@ -119,25 +138,13 @@ public class Controller : MonoBehaviour
 
         rb.velocity = Vector3.Lerp(rb.velocity, nextVelocity, smoothnessValue * Time.fixedDeltaTime);
         applyJump();
-    }
 
-    private void FixedUpdate()
-    {
-        //Debug.Log(rb.velocity.magnitude);
-        if (rb.velocity.magnitude > maxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
-        //Debug.Log(rb.velocity.y);
     }
 
     private void LateUpdate()
     {
         if (actualAnim == null) return;
-        if (actualAnim.isPlaying)
-        {
-            transform.localPosition = animationLocalPos;
-        }
+        if (actualAnim.isPlaying) transform.localPosition = animationLocalPos;
         else
         {
             Vector3 auxPos = transform.position;
@@ -179,6 +186,6 @@ public class Controller : MonoBehaviour
 
     public void restartlife()
     {
-        
+        deltaPos = transform.position;
     }
 }

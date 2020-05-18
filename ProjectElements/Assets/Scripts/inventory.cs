@@ -13,7 +13,7 @@ public class inventory : MonoBehaviour
 
     void Start()
     {
-        if (PlayerPrefs.HasKey("lifes"))
+        if (PlayerPrefs.HasKey("lifes") || SceneManager.GetActiveScene().buildIndex == 0)
         {
             updateLifes(PlayerPrefs.GetInt("lifes"));
             updateExp(PlayerPrefs.GetInt("exp"));

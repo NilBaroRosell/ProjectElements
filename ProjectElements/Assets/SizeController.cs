@@ -5,15 +5,19 @@ using UnityEngine;
 public class SizeController : MonoBehaviour
 {
     private float initialSize;
+    private float initialRad;
+    private float initialHeight;
     private float size;
     private float particleInitialLife;
     private float particleInitialSize;
     private float collisionRef = 0.0f;
-    private Vector3 respawn;
+    public Vector3 respawn;
 
     // Start is called before the first frame update
     void Start()
     {
+        initialRad = transform.GetComponent<CapsuleCollider>().radius;
+        initialHeight = transform.GetComponent<CapsuleCollider>().height;
         initialSize = gameObject.transform.parent.localScale.x;
         particleInitialLife = transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime;
         particleInitialSize = transform.GetChild(0).GetComponent<ParticleSystem>().startSize;
@@ -52,6 +56,10 @@ public class SizeController : MonoBehaviour
         {
             collisionRef = Time.time;
             size -= initialSize * 0.2f;
+            GetComponent<CapsuleCollider>().radius = 
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().radius -= initialRad * 0.2f;
+            GetComponent<CapsuleCollider>().height =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().height -= initialHeight * 0.2f;
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime -= particleInitialLife * 0.2f;
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize -= particleInitialSize * 0.2f;
             if (size <= 0.1f)
@@ -62,13 +70,23 @@ public class SizeController : MonoBehaviour
                 transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
                 transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
                 transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
-                transform.parent.GetChild(0).position = respawn;
+                GetComponent<CapsuleCollider>().radius =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().radius = initialRad;
+                GetComponent<CapsuleCollider>().height =
+                    transform.parent.GetChild(0).GetComponent<CapsuleCollider>().height = initialHeight;
+                transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = respawn;
+
+                transform.parent.GetChild(0).GetComponent<Controller>().restartlife();
                 GameObject.Find("Canvas").GetComponent<inventory>().updateLifes(-1);
             }
             else
             {
+                Vector3 aux = transform.parent.GetChild(0).position;
+                transform.parent.position = aux + Vector3.up * 3;
+                transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = aux;
                 transform.parent.localScale = new Vector3(size, size, 1);
             }
+            transform.GetChild(2).GetComponent<ParticleSystem>().Play(true);
         }
 
         if (collision.gameObject.tag == "Water")
@@ -79,8 +97,14 @@ public class SizeController : MonoBehaviour
             transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y + 1.0f, transform.parent.GetChild(0).position.z);
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
             transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
-            transform.parent.GetChild(0).position = respawn;
+            GetComponent<CapsuleCollider>().radius =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().radius = initialRad;
+            GetComponent<CapsuleCollider>().height =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().height = initialHeight;
+            transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = respawn;
+            transform.parent.GetChild(0).GetComponent<Controller>().restartlife();
             GameObject.Find("Canvas").GetComponent<inventory>().updateLifes(-1);
+            transform.GetChild(2).GetComponent<ParticleSystem>().Play(true);
         }
 
         if (collision.gameObject.tag == "Plant")
@@ -88,10 +112,18 @@ public class SizeController : MonoBehaviour
             Destroy(collision.gameObject);
             size = initialSize;
             transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
+            Vector3 aux = transform.parent.GetChild(0).position;
+            transform.parent.position = aux;
+            transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = aux;
             transform.parent.localScale = new Vector3(size, size, 1);
             transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y+1.0f, transform.parent.GetChild(0).position.z);
             transform.GetChild(0).GetComponent<ParticleSystem>().startLifetime = particleInitialLife;
-            transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;   
+            transform.GetChild(0).GetComponent<ParticleSystem>().startSize = particleInitialSize;
+            GetComponent<CapsuleCollider>().radius =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().radius = initialRad;
+            GetComponent<CapsuleCollider>().height =
+                transform.parent.GetChild(0).GetComponent<CapsuleCollider>().height = initialHeight;
+            transform.GetChild(2).GetComponent<ParticleSystem>().Play(true);
         }
     }
 }
