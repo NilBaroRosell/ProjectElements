@@ -14,6 +14,6 @@ public class cameraRefScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localPosition = initialLocalPos + new Vector3(0, initialLocalPos.y * Input.GetAxis("Vertical"), 0);
+        transform.position = transform.parent.position + new Vector3(initialLocalPos.x, initialLocalPos.y + initialLocalPos.y * (Input.GetAxis("Vertical") * 2.0f), initialLocalPos.z);
     }
 }
