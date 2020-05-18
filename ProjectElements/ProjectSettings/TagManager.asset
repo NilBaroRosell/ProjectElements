@@ -8,6 +8,7 @@ TagManager:
   - Enemie
   - Plant
   - Water
+  - End
   layers:
   - Default
   - TransparentFX

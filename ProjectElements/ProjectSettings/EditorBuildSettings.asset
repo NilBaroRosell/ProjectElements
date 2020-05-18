@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Nexo.unity
     guid: 5d8f3724d35ce4d44837829dcf4e6563
+  - enabled: 1
+    path: Assets/Scenes/End.unity
+    guid: 42ee80f352bfa684db53c3955c5aca85
   m_configObjects: {}
