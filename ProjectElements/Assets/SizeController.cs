@@ -86,6 +86,7 @@ public class SizeController : MonoBehaviour
             {
                 Vector3 aux = transform.parent.GetChild(0).position;
                 transform.parent.position = aux + Vector3.up * 3;
+                transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
                 transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = aux;
                 transform.parent.localScale = new Vector3(size, size, 1);
             }
@@ -117,6 +118,7 @@ public class SizeController : MonoBehaviour
             transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
             Vector3 aux = transform.parent.GetChild(0).position;
             transform.parent.position = aux;
+            transform.parent.GetChild(0).GetComponent<Rigidbody>().velocity = Vector3.zero;
             transform.parent.GetChild(0).position = transform.parent.GetChild(1).position = aux;
             transform.parent.localScale = new Vector3(size, size, 1);
             transform.position = transform.parent.GetChild(0).position = new Vector3(collision.transform.position.x, collision.transform.position.y+1.0f, transform.parent.GetChild(0).position.z);

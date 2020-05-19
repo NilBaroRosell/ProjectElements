@@ -6,6 +6,7 @@ public class Controller : MonoBehaviour
 {
     public Rigidbody rb;
     public static bool isGrounded;
+    bool touchingGround = false;
     public float smoothnessX;
     public float smoothnessValue;
     public float speed;
@@ -29,7 +30,6 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayerPrefs.SetInt("LEVEL2", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Nexo" ? 1 : 0);
         rb.constraints = defaultConstraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionZ;
         isGrounded = false;
         jumpRef = Time.realtimeSinceStartup;
@@ -59,37 +59,29 @@ public class Controller : MonoBehaviour
             truncateAcum = 0;
             transform.position = deltaPos;
         }
+        else truncateAcum = 0;
         if (Vector2.Distance(transform.position, deltaPos) < maxSpeed) deltaPos = transform.position;
         else { transform.position = deltaPos; rb.velocity = Vector3.zero; }
     }
 
     private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (touchingGround)
         {
-            restartlife();
-        }
-        if (canJump && Input.GetAxis("Jump") == 1 && isGrounded && jumpRef + 0.4f < Time.realtimeSinceStartup)
-        {
-            jumpAcum += 4;
-        }
-        if (jumpAcum > 6) jumpAcum = 6;
-        if (!Input.GetKey(KeyCode.Space) && jumpAcum == 0) canJump = true;
-
-
-
-        for (int i = 0; i < 2; i++)
-        {
-            RaycastHit hit;
-            Physics.Raycast(transform.position - new Vector3(0.35f - i * (0.35f * 2), 0, 0), groundRays[0], out hit, 1);
-
-            if (hit.transform != null && hit.transform.gameObject.layer == 11)
+            for (int i = 0; i < 2; i++)
             {
-                isGrounded = true;
-                break;
+                RaycastHit hit;
+                Physics.Raycast(transform.position - new Vector3(0.35f - i * (0.35f * 2), 0, 0), groundRays[0], out hit, 1);
+
+                if (hit.transform != null && hit.transform.gameObject.layer == 11)
+                {
+                    isGrounded = true;
+                    break;
+                }
+                else isGrounded = false;
             }
-            else isGrounded = false;
         }
+        else isGrounded = false;
 
         if (Input.GetKey(KeyCode.E))
         {
@@ -114,32 +106,31 @@ public class Controller : MonoBehaviour
         }
         else rb.constraints = defaultConstraints;
 
+        
         Vector3 nextVelocity = rb.velocity;
-        nextVelocity.x = Input.GetAxis("Horizontal") * smoothnessX;
 
-        if (!isGrounded && jumpAcum == 0)
-        {
-            nextVelocity.y -= speed * 0.3f;
-            rb.AddForce(Vector3.down * fallGravity, ForceMode.Acceleration);
-            rb.velocity = nextVelocity.normalized * desiredVelocity;
-        }
-        else if (!isGrounded && rb.velocity.y < 0.0f)
+        //if (!isGrounded && jumpAcum == 0)
+        //{
+        //    nextVelocity.y -= speed * 0.3f;
+        //    rb.AddForce(Vector3.down * fallGravity, ForceMode.Acceleration);
+        //    rb.velocity = nextVelocity.normalized * desiredVelocity;
+        //}
+        //else 
+
+        if (!isGrounded)
         {
             canJump = false;
-            nextVelocity.y -= speed * 30.0f;
+            //nextVelocity.y -= speed * 30.0f;
             rb.AddForce(Vector3.down * fallGravity, ForceMode.Acceleration);
-            rb.velocity = nextVelocity.normalized * desiredVelocity;
+            if(rb.velocity.y < 0.0f) rb.AddForce(Vector3.down * fallGravity, ForceMode.Impulse);
+            //rb.AddForce(new Vector3(Input.GetAxis("Horizontal"), 0).normalized * speed / 10.0f, ForceMode.Acceleration);
+            transform.position += new Vector3(Input.GetAxis("Horizontal"), 0).normalized * speed *0.75f * Time.deltaTime;
         }
-
         else
-        {
-            nextVelocity.y = 0;
-            rb.velocity = nextVelocity.normalized * desiredVelocity;
-        }
+            transform.position += new Vector3(Input.GetAxis("Horizontal"), 0).normalized * speed * Time.deltaTime; //rb.AddForce(new Vector3(Input.GetAxis("Horizontal"), 0).normalized * speed, ForceMode.Acceleration);
 
-        rb.velocity = Vector3.Lerp(rb.velocity, nextVelocity, smoothnessValue * Time.fixedDeltaTime);
         applyJump();
-
+        touchingGround = false;
     }
 
     private void LateUpdate()
@@ -166,21 +157,21 @@ public class Controller : MonoBehaviour
 
     void applyJump()
     {
-        RaycastHit hit1, hit2;
-        Physics.Raycast(transform.position, Vector3.right, out hit1, 0.5f);
-        Physics.Raycast(transform.position, Vector3.left, out hit2, 0.5f);
+        //RaycastHit hit1, hit2;
+        //Physics.Raycast(transform.position, Vector3.right, out hit1, 0.5f);
+        //Physics.Raycast(transform.position, Vector3.left, out hit2, 0.5f);
 
-        if ((hit1.transform != null && hit1.transform.gameObject.layer == 10) || (hit2.transform != null && hit2.transform.gameObject.layer == 10))
-        {
-            jumpAcum = 0;
-            return;
-        }
-        if (jumpAcum > 0)
+        //if ((hit1.transform != null && hit1.transform.gameObject.layer == 10) || (hit2.transform != null && hit2.transform.gameObject.layer == 10))
+        //{
+        //    jumpAcum = 0;
+        //    return;
+        //}
+        if (isGrounded && Input.GetKey(KeyCode.Space))
         {
             rb.AddForce(Vector3.up * jumpSmooth, ForceMode.Impulse);
-            rb.AddForce(rb.velocity * (jumpSmooth / 15), ForceMode.Impulse);
-            jumpAcum--;
-            if(jumpAcum == 0) jumpRef = Time.realtimeSinceStartup;
+            rb.AddForce(rb.velocity * (jumpSmooth / 5.0f) + new Vector3(Input.GetAxis("Horizontal"), 0).normalized * speed * 2, ForceMode.Impulse);
+            isGrounded = false;
+            //if(jumpAcum == 0) jumpRef = Time.realtimeSinceStartup;
             if (!isGrounded) canJump = false;
         }
     }
@@ -188,5 +179,13 @@ public class Controller : MonoBehaviour
     public void restartlife()
     {
         deltaPos = transform.position;
+    }
+
+    void OnCollisionStay(Collision theCollision)
+    {
+        if (theCollision.gameObject.layer == 11)
+        {
+            touchingGround = true;
+        }
     }
 }
